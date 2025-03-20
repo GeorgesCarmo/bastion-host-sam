@@ -1,21 +1,27 @@
-const AWS = require ('aws-sdk');
+const { EC2Client, StartInstancesCommand, StopInstancesCommand } = require("@aws-sdk/client-ec2");
 
-AWS.config.update({ region: 'us-east-1' });
-const ec2 = new AWS.EC2({ apiVersion: '2016-11-15' });
+const ec2Client = new EC2Client({ region: "us-east-1" });
+
 const params = {
-  InstanceIds: ['i-00f8f9760a3cec52b'],
+  InstanceIds: ["i-00f8f9760a3cec52b"],
 };
 
-exports.startEC2Instances = () => {
-    return ec2.startInstances(params, (err, data) => {
-        if (err) console.log(err, err.stack);
-        else console.log("Bastion Host ligado com sucesso!");
-});
-}
+exports.startEC2Instances = async () => {
+  try {
+    const command = new StartInstancesCommand(params);
+    const response = await ec2Client.send(command);
+    console.log("Bastion Host ligado com sucesso!", response);
+  } catch (err) {
+    console.error("Erro ao ligar Bastion Host:", err);
+  }
+};
 
-exports.stopEC2Instances = () => {
-    return ec2.stopInstances(params, (err, data) => {
-        if (err) console.log(err, err.stack);
-        else console.log("Bastion Host desligado com sucesso!");
-});
-}
+exports.stopEC2Instances = async () => {
+  try {
+    const command = new StopInstancesCommand(params);
+    const response = await ec2Client.send(command);
+    console.log("Bastion Host desligado com sucesso!", response);
+  } catch (err) {
+    console.error("Erro ao desligar Bastion Host:", err);
+  }
+};

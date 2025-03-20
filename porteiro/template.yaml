@@ -22,11 +22,30 @@ Resources:
         CloudWatchEvent:
           Type: Schedule # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Schedule: cron(50, 10 ?, * MON-FRI *)
+            Schedule: cron(10, 01 ?, * MON-FRI *)
       Policies:
         - Statement:
           - Sid: startEC2
             Effect: Allow
             Action:
               - ec2:StartInstances
-            Resource: "*"      
+            Resource: "*"
+  DesligarPorteiro:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Handler: src/handlers/porteiro.stopEC2Instances
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      Events:
+        CloudWatchEvent:
+          Type: Schedule # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Schedule: cron(15, 01 ?, * MON-FRI *)
+      Policies:
+        - Statement:
+          - Sid: stopEC2
+            Effect: Allow
+            Action:
+              - ec2:StopInstances
+            Resource: "*"          
